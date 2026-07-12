@@ -474,7 +474,10 @@ renderer.domElement.addEventListener('pointerup', (e) => {
   e.preventDefault();
   if (!aiming) return;
   aiming = false;
-  onMove(e.clientX, e.clientY); // final aim = release point (matches last drag)
+  // Bowl along the aim the last pointermove already set — do NOT re-aim to the
+  // release point. On touch the finger rolls a few pixels as it lifts, so the
+  // pointerup coords differ slightly from the last drag position; re-aiming
+  // here made the guide arrow visibly jump (~5deg) right after release.
   launch();
 });
 renderer.domElement.addEventListener('pointercancel', () => { aiming = false; });
