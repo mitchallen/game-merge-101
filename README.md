@@ -2,6 +2,8 @@
 
 **▶️ Play it live: https://mitchallen.github.io/game-merge-101/**
 
+![Merge Bowl gameplay — pucks merging down a top-down bowling lane](docs/screenshot.png)
+
 A browser game that mashes a **merge puzzle** together with **bowling**. You look
 straight down a lane like you're standing at the foul line of a bowling alley.
 Random pucks appear at your end; bowl them down the lane, and when two pucks with
