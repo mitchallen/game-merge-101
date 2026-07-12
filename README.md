@@ -17,6 +17,21 @@ the top tier to *clear* it for a big bonus.
 
 The **Next** puck is previewed in the top-right; your best score is saved locally.
 
+## Quick start
+
+Requires [Node.js](https://nodejs.org) 18+.
+
+```sh
+git clone https://github.com/mitchallen/game-merge-101.git
+cd game-merge-101
+make install   # or: npm install
+make dev       # or: npm run dev
+```
+
+`make dev` starts the Vite dev server with hot reload and opens the game in your
+browser (defaults to http://localhost:5173). That's it — no external assets or
+services to configure.
+
 ## Tech
 
 - **Rendering:** [Three.js](https://threejs.org) — a perspective camera looking
