@@ -20,6 +20,7 @@ node_modules: package.json
 	@touch node_modules
 
 install: node_modules
+	@echo "Dependencies ready in node_modules/ (run 'make distclean' to force a clean reinstall)."
 
 dev: node_modules
 	$(NPM) run dev
