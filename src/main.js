@@ -442,10 +442,12 @@ function onMove(clientX, clientY) {
   if (t) computeAim(t);
 }
 
-function launch(clientX, clientY) {
+// Bowl the current puck along the aim set by the drag. No coordinates here:
+// the shot always uses the aim the player last saw, so releasing where you
+// aimed never nudges the puck (critical on touch, where the "shoot" tap would
+// otherwise land at a different spot than the aim drag).
+function launch() {
   if (state !== State.PLAY || !preview || launchCooldown > 0) return;
-  const t = pointerToWorld(clientX, clientY);
-  if (t) computeAim(t);
   world.spawn(currentTier, 0, ALLEY.launchZ, aim.vx, aim.vz);
 
   scene.remove(preview); disposePuck(preview); preview = null;
@@ -456,12 +458,26 @@ function launch(clientX, clientY) {
   hintEl.style.opacity = '0';
 }
 
+// Aim on drag, shoot on release. A plain tap is a down+up at one spot, so it
+// still aims-and-fires toward that spot; a drag lets you refine the aim and
+// only bowls when you lift. Pointer capture keeps move/up flowing even if the
+// finger strays off the canvas mid-drag.
+let aiming = false;
 renderer.domElement.addEventListener('pointermove', (e) => onMove(e.clientX, e.clientY));
 renderer.domElement.addEventListener('pointerdown', (e) => {
   e.preventDefault();
-  onMove(e.clientX, e.clientY);
-  launch(e.clientX, e.clientY);
+  aiming = true;
+  try { renderer.domElement.setPointerCapture(e.pointerId); } catch {}
+  onMove(e.clientX, e.clientY); // show the aim at the press point
 });
+renderer.domElement.addEventListener('pointerup', (e) => {
+  e.preventDefault();
+  if (!aiming) return;
+  aiming = false;
+  onMove(e.clientX, e.clientY); // final aim = release point (matches last drag)
+  launch();
+});
+renderer.domElement.addEventListener('pointercancel', () => { aiming = false; });
 
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('againBtn').addEventListener('click', startGame);
