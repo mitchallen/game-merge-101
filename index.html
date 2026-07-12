@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Merge Bowl — game-merge-101</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ui: #e8ecf1;
+        --accent: #ffd54a;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #05070d;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--ui);
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: none;
+      }
+      #app { position: fixed; inset: 0; }
+      canvas { display: block; }
+
+      /* ---- HUD ---- */
+      #hud {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: max(14px, env(safe-area-inset-top)) 16px 16px;
+      }
+      .row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+
+      .panel {
+        background: rgba(12, 18, 30, 0.62);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 10px 14px;
+        backdrop-filter: blur(6px);
+      }
+      #score .big { font-size: clamp(26px, 6vw, 40px); font-weight: 800; line-height: 1; }
+      #score .lbl { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; opacity: .6; }
+      #best { font-size: 12px; opacity: .7; margin-top: 4px; }
+
+      #next { text-align: center; }
+      #next .lbl { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; opacity: .6; }
+      #nextDot {
+        width: 34px; height: 34px; border-radius: 50%; margin: 6px auto 0;
+        display: grid; place-items: center; font-weight: 800; color: #0a0d14;
+        box-shadow: inset 0 -4px 8px rgba(0,0,0,.28);
+      }
+
+      #hint {
+        align-self: center;
+        font-size: 13px;
+        opacity: .75;
+        text-align: center;
+        transition: opacity .4s;
+      }
+
+      /* ---- Overlays ---- */
+      .overlay {
+        position: fixed; inset: 0;
+        display: grid; place-items: center;
+        background: radial-gradient(120% 90% at 50% 0%, rgba(20,30,50,.55), rgba(3,5,10,.92));
+        pointer-events: auto;
+        z-index: 10;
+      }
+      .overlay.hidden { display: none; }
+      .card {
+        width: min(90vw, 420px);
+        text-align: center;
+        padding: 28px 26px 26px;
+        background: rgba(14, 20, 34, 0.9);
+        border: 1px solid rgba(255,255,255,.1);
+        border-radius: 20px;
+        box-shadow: 0 24px 60px rgba(0,0,0,.55);
+      }
+      .card h1 { margin: 0 0 6px; font-size: 30px; letter-spacing: .02em; }
+      .card h1 .m { color: var(--accent); }
+      .card p { margin: 8px 0; opacity: .82; line-height: 1.5; font-size: 15px; }
+      .card .final { font-size: 44px; font-weight: 800; margin: 10px 0 2px; }
+      button {
+        margin-top: 18px;
+        font: inherit;
+        font-weight: 700;
+        font-size: 17px;
+        color: #0a0d14;
+        background: var(--accent);
+        border: 0;
+        border-radius: 12px;
+        padding: 13px 30px;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: transform .08s ease, filter .15s;
+      }
+      button:hover { filter: brightness(1.06); }
+      button:active { transform: translateY(1px) scale(.99); }
+      .legend { display: flex; justify-content: center; gap: 8px; margin: 14px 0 2px; flex-wrap: wrap; }
+      .legend .b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+        font-size: 11px; font-weight: 800; color: #0a0d14; }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <div id="hud">
+      <div class="row">
+        <div id="score" class="panel">
+          <div class="lbl">Score</div>
+          <div class="big">0</div>
+          <div id="best">Best 0</div>
+        </div>
+        <div id="next" class="panel">
+          <div class="lbl">Next</div>
+          <div id="nextDot">1</div>
+        </div>
+      </div>
+      <div id="hint" class="panel">Aim with your mouse / finger &nbsp;•&nbsp; tap the lane to bowl</div>
+    </div>
+
+    <div id="startOverlay" class="overlay">
+      <div class="card">
+        <h1><span class="m">Merge</span> Bowl</h1>
+        <p>Bowl pucks down the alley. When two of the <b>same number</b> collide they merge into the next one up.</p>
+        <p>Reach the top tier to clear it for big points. Don't let the pile back up to the foul line!</p>
+        <div id="legend" class="legend"></div>
+        <button id="startBtn">Start Bowling</button>
+      </div>
+    </div>
+
+    <div id="overOverlay" class="overlay hidden">
+      <div class="card">
+        <h1>Lane Jammed!</h1>
+        <p>The pile crossed the foul line.</p>
+        <div class="final" id="finalScore">0</div>
+        <p id="overBest" style="opacity:.65">Best 0</p>
+        <button id="againBtn">Bowl Again</button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
