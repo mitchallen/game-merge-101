@@ -458,17 +458,18 @@ function launch() {
   hintEl.style.opacity = '0';
 }
 
-// Aim on drag, shoot on release. A plain tap is a down+up at one spot, so it
-// still aims-and-fires toward that spot; a drag lets you refine the aim and
-// only bowls when you lift. Pointer capture keeps move/up flowing even if the
-// finger strays off the canvas mid-drag.
+// Aim on drag, shoot on release. Only a drag (pointermove) changes the aim; a
+// plain tap bowls along the current aim — the direction the guide arrow is
+// already showing. The press itself must NOT re-aim: tapping the puck sits at
+// the launcher (dz~0, x~0), which computeAim resolves to dead-straight, so
+// aiming on press snapped the arrow forward on every tap. Pointer capture keeps
+// move/up flowing even if the finger strays off the canvas mid-drag.
 let aiming = false;
 renderer.domElement.addEventListener('pointermove', (e) => onMove(e.clientX, e.clientY));
 renderer.domElement.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   aiming = true;
   try { renderer.domElement.setPointerCapture(e.pointerId); } catch {}
-  onMove(e.clientX, e.clientY); // show the aim at the press point
 });
 renderer.domElement.addEventListener('pointerup', (e) => {
   e.preventDefault();
